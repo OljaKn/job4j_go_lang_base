@@ -1,14 +1,19 @@
 package main
 
 import (
-	"fmt"
-
-	"job4j.ru/go-lang-base/internal/base"
+	"job4j.ru/go-lang-base/internal/tracker"
 )
 
 func main() {
-	first := 100
+	ui := tracker.UI{
+		In:      tracker.ConsoleInput{},
+		Out:     tracker.ConsoleOutput{},
+		Tracker: tracker.NewTracker(),
+	}
+	ui.Run()
+	/*first := 100
 	second := 10
 	res := base.Max(first, second)
-	fmt.Println(fmt.Sprintf("%d + %d = %d", first, second, res))
+	fmt.Println(fmt.Sprintf("%d + %d = %d", first, second, res))*/
+
 }

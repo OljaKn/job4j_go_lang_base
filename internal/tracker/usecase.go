@@ -1,0 +1,67 @@
+package tracker
+
+import "github.com/google/uuid"
+
+type Usecase interface {
+	Done(in Input, out Output, tracker *Tracker)
+}
+
+type AddUsecase struct{}
+
+func (u AddUsecase) Done(in Input, out Output, tracker *Tracker) {
+	out.Out("enter name:")
+	name := in.Get()
+	id := uuid.New().String()
+	tracker.AddItem(Item{Name: name, ID: id})
+}
+
+type GetUsecase struct{}
+
+func (u GetUsecase) Done(_ Input, out Output, tracker *Tracker) {
+	for _, item := range tracker.items {
+		out.Out(item.toString())
+	}
+}
+
+type UpdateUsecase struct{}
+
+func (u UpdateUsecase) Done(in Input, out Output, tracker *Tracker) {
+	out.Out("enter name for update:")
+	name := in.Get()
+	foundItem := tracker.FindByName(name)
+	if foundItem != nil {
+		out.Out("Enter new name:")
+		newName := in.Get()
+		foundItem.Name = newName
+		out.Out("Access")
+	} else {
+		out.Out("Not found Item")
+	}
+}
+
+type DeleteUsecase struct{}
+
+func (u DeleteUsecase) Done(in Input, out Output, tracker *Tracker) {
+	out.Out("Enter name for delete:")
+	name := in.Get()
+	res := tracker.DeleteItems(name)
+	if res == true {
+		out.Out("Access")
+	} else {
+		out.Out("Not found Item")
+	}
+}
+
+type FindByNameUsecase struct{}
+
+func (u FindByNameUsecase) Done(in Input, out Output, tracker *Tracker) {
+	out.Out("Enter string for found:")
+	part := in.Get()
+	res := tracker.FindByPartName(part)
+	if len(res) == 0 {
+		out.Out("Not found Item")
+	}
+	for _, item := range res {
+		out.Out(item.toString())
+	}
+}

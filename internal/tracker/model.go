@@ -32,23 +32,30 @@ func (t *Tracker) GetItems() []Item {
 	return res
 }
 
-func (t *Tracker) FindByName(name string) *Item {
-	for i := 0; i < len(t.items); i++ {
-		if t.items[i].Name == name {
-			return &t.items[i]
-		}
+func (t *Tracker) FindById(id string) *Item {
+	index := t.IndexOf(id)
+	if index == -1 {
+		return nil
 	}
-	return nil
+	return &t.items[index]
 }
 
-func (t *Tracker) DeleteItems(name string) bool {
-	for i := 0; i < len(t.items); i++ {
-		if t.items[i].Name == name {
-			t.items = append(t.items[:i], t.items[i+1:]...)
-			return true
-		}
+func (t *Tracker) DeleteItems(id string) bool {
+	index := t.IndexOf(id)
+	if index == -1 {
+		return false
 	}
-	return false
+	t.items = append(t.items[:index], t.items[index+1:]...)
+	return true
+}
+
+func (t *Tracker) UpdateItems(id string, newName string) bool {
+	index := t.IndexOf(id)
+	if index == -1 {
+		return false
+	}
+	t.items[index].Name = newName
+	return true
 }
 
 func (t *Tracker) FindByPartName(part string) []*Item {
@@ -59,4 +66,13 @@ func (t *Tracker) FindByPartName(part string) []*Item {
 		}
 	}
 	return res
+}
+
+func (t *Tracker) IndexOf(id string) int {
+	for i := 0; i < len(t.items); i++ {
+		if t.items[i].ID == id {
+			return i
+		}
+	}
+	return -1
 }

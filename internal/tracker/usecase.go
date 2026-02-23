@@ -26,25 +26,26 @@ func (u GetUsecase) Done(_ Input, out Output, tracker *Tracker) {
 type UpdateUsecase struct{}
 
 func (u UpdateUsecase) Done(in Input, out Output, tracker *Tracker) {
-	out.Out("enter name for update:")
-	name := in.Get()
-	foundItem := tracker.FindByName(name)
-	if foundItem != nil {
-		out.Out("Enter new name:")
-		newName := in.Get()
-		foundItem.Name = newName
-		out.Out("Access")
-	} else {
+	out.Out("enter ID for update:")
+	id := in.Get()
+	foundItem := tracker.FindById(id)
+	if foundItem == nil {
 		out.Out("Not found Item")
+		return
+	}
+	out.Out("Enter new name:")
+	newName := in.Get()
+	if tracker.UpdateItems(id, newName) {
+		out.Out("Access")
 	}
 }
 
 type DeleteUsecase struct{}
 
 func (u DeleteUsecase) Done(in Input, out Output, tracker *Tracker) {
-	out.Out("Enter name for delete:")
-	name := in.Get()
-	res := tracker.DeleteItems(name)
+	out.Out("Enter Id for delete:")
+	id := in.Get()
+	res := tracker.DeleteItems(id)
 	if res == true {
 		out.Out("Access")
 	} else {

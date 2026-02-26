@@ -33,8 +33,8 @@ type UpdateUsecase struct{}
 func (u UpdateUsecase) Done(in Input, out Output, tracker *Tracker) {
 	out.Out("enter ID for update:")
 	id := in.Get()
-	foundItem := tracker.FindById(id)
-	if foundItem == nil {
+	_, err := tracker.FindById(id)
+	if err != nil {
 		out.Out("Not found Item")
 		return
 	}

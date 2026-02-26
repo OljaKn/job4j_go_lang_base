@@ -37,12 +37,12 @@ func (t *Tracker) GetItems() []Item {
 	return res
 }
 
-func (t *Tracker) FindById(id string) *Item {
+func (t *Tracker) FindById(id string) (*Item, error) {
 	index, ok := t.indexOf(id)
 	if !ok {
-		return nil
+		return nil, ErrIdNotFound
 	}
-	return &t.items[index]
+	return &t.items[index], nil
 }
 
 func (t *Tracker) DeleteItems(id string) bool {

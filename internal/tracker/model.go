@@ -59,7 +59,7 @@ func (t *Tracker) UpdateItems(item Item) error {
 	if !ok {
 		return ErrNotFound
 	}
-	t.items[index].Name = item.Name
+	t.items[index] = item
 	return nil
 }
 

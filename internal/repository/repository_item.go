@@ -90,7 +90,7 @@ func (r *RepoPg) Delete(ctx context.Context, id string) error {
 func (r *RepoPg) FindByPartName(ctx context.Context, part string) ([]tracker.Item, error) {
 	rows, err := r.pool.Query(
 		ctx,
-		`select id, name from items where name like '%$1%' `,
+		`select id, name from items where name like '%' || $1 || '%' `,
 		part,
 	)
 	if err != nil {

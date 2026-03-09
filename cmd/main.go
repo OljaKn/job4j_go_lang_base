@@ -1,19 +1,44 @@
 package main
 
 import (
-	"job4j.ru/go-lang-base/internal/tracker"
+	"context"
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"job4j.ru/go-lang-base/internal/api"
+	"job4j.ru/go-lang-base/internal/config"
+	"job4j.ru/go-lang-base/internal/db"
+	"job4j.ru/go-lang-base/internal/repository"
 )
 
 func main() {
-	ui := tracker.UI{
-		In:      tracker.ConsoleInput{},
-		Out:     tracker.ConsoleOutput{},
-		Tracker: tracker.NewTracker(),
-	}
-	ui.Run()
-	/*first := 100
-	second := 10
-	res := base.Max(first, second)
-	fmt.Println(fmt.Sprintf("%d + %d = %d", first, second, res))*/
+	ctx := context.Background()
 
+	// Конфиг БД из переменных окружения (как в прошлом уроке)
+	cfg := db.Config{
+		Host:     config.Env("DB_HOST", "localhost"),
+		Port:     config.EnvInt("DB_PORT", 6543),
+		User:     config.Env("DB_USER", "postgres"),
+		Password: config.Env("DB_PASSWORD", "password"),
+		DBName:   config.Env("DB_NAME", "tracker"),
+		SSLMode:  config.Env("DB_SSLMODE", "disable"),
+	}
+
+	// Создаем пул соединений
+	pool, err := db.NewPool(ctx, cfg.DSN())
+	if err != nil {
+		log.Fatal("нет подключения:", err)
+	}
+	defer pool.Close()
+
+	repo := repository.NewRepoPg(pool)
+	server := api.NewServer(repo)
+
+	app := fiber.New()
+	server.Route(app.Group("/api"))
+
+	err = app.Listen(":8080")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
